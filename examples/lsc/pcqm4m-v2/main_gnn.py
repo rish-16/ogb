@@ -170,10 +170,17 @@ def main():
     else:
         scheduler = StepLR(optimizer, step_size=30, gamma=0.25)
 
+    ALLTIMES = []
+
     for epoch in range(1, args.epochs + 1):
+        start = time.time()
         print("=====Epoch {}".format(epoch))
         print('Training...')
         train_mae = train(model, device, train_loader, optimizer)
+
+        end = time.time()
+        diff = end - start
+        ALLTIMES.append(diff)
 
         print('Evaluating...')
         valid_mae = eval(model, device, valid_loader, evaluator)
@@ -209,6 +216,7 @@ def main():
     if args.log_dir != '':
         writer.close()
 
+    np.save(f"{args.gnn}_epoch_timings.npy", np.asarray(ALLTIMES))
 
 if __name__ == "__main__":
     main()
